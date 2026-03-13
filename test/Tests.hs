@@ -8,17 +8,52 @@ module Main (main) where
 
 import Prelude ()
 import Prelude.Compat
+    ( (++),
+      map,
+      ($),
+      Eq((==)),
+      Functor(fmap),
+      Show,
+      Bool(True),
+      String,
+      Int,
+      Maybe(..),
+      IO,
+      (.),
+      (<$>),
+      uncurry )
 
 import Data.Aeson
+    ( encode,
+      decode,
+      decodeStrict,
+      (.:),
+      (.:!),
+      (.:?),
+      withObject,
+      FromJSON(parseJSON) )
 import Data.Aeson.Extra
+    ( mkValue,
+      mkValue',
+      SingObject(..),
+      CollapsedList(CollapsedList),
+      streamDecode,
+      SymTag(..),
+      getCollapsedList,
+      parseCollapsedList,
+      mkSingObject,
+      getSingObject,
+      lodashMerge,
+      encodeStrict )
 
 import Data.Maybe                (isJust)
-import Data.Proxy
+import Data.Proxy ( Proxy(..) )
 import Data.Vector               (Vector)
 import Test.QuickCheck.Instances ()
-import Test.Tasty
+import Test.Tasty ( defaultMain, testGroup, TestTree )
 import Test.Tasty.HUnit
-import Test.Tasty.QuickCheck
+    ( testCase, (@?=), assertBool, assertEqual )
+import Test.Tasty.QuickCheck ( (===), testProperty, Property )
 
 import Orphans ()
 

@@ -1,7 +1,5 @@
 {-# LANGUAGE CPP                #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveFoldable     #-}
-{-# LANGUAGE DeriveFunctor      #-}
 {-# LANGUAGE DeriveTraversable  #-}
 {-# LANGUAGE TypeFamilies       #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -29,15 +27,19 @@ module Data.Aeson.Extra.Recursive (
 
 import Prelude ()
 import Prelude.Compat
+    ( Eq, Functor, Read, Show, Foldable, Traversable, Bool )
 
-import Data.Aeson
+import Data.Aeson ( Value(..) )
 import Data.Data             (Data)
 import Data.Functor.Foldable
+    ( Base, Corecursive(embed), Recursive(project) )
 import Data.HashMap.Strict   (HashMap)
 import Data.Scientific       (Scientific)
 import Data.Text             (Text)
-import Data.Typeable         (Typeable)
 import Data.Vector           (Vector)
+#if __GLASGOW_HASKELL__ < 710
+import Data.Typeable (Typeable)
+#endif
 
 #if !(MIN_VERSION_recursion_schemes(5,0,0))
 #define Recursive F.Foldable
@@ -69,7 +71,11 @@ data ValueF a
     | NumberF !Scientific
     | BoolF !Bool
     | NullF
-    deriving (Eq, Read, Show, Typeable, Data, Functor, Prelude.Compat.Foldable, Traversable)
+    deriving (Eq, Read, Show, Data, Functor, Prelude.Compat.Foldable, Traversable
+#if __GLASGOW_HASKELL__ < 710
+        , Typeable
+#endif
+        )
 
 type instance Base Value = ValueF
 

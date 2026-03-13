@@ -1,7 +1,4 @@
 {-# LANGUAGE CPP                #-}
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveFoldable     #-}
-{-# LANGUAGE DeriveFunctor      #-}
 {-# LANGUAGE DeriveTraversable  #-}
 {-# LANGUAGE FlexibleContexts   #-}
 -----------------------------------------------------------------------------
@@ -20,12 +17,38 @@ module Data.Aeson.Extra.CollapsedList (
 
 import Prelude ()
 import Prelude.Compat
+    ( ($),
+      Eq,
+      Functor,
+      Ord,
+      Read,
+      Show,
+      Applicative(pure),
+      Foldable,
+      Traversable,
+      Monoid(mappend),
+      Maybe(Just, Nothing),
+      (<$>) )
 
 import Control.Applicative (Alternative (..))
-import Data.Aeson.Types    hiding ((.:?))
+import Data.Aeson.Types
+    ( parseJSON1,
+      toEncoding1,
+      toJSON1,
+      FromJSON(parseJSON),
+      FromJSON1(liftParseJSON),
+      Object,
+      Value(Array, Null),
+      ToJSON(toJSON, toEncoding),
+      ToJSON1(liftToJSON, liftToEncoding),
+      listParser,
+      modifyFailure,
+      listEncoding,
+      listValue,
+      Parser )
 import Data.Text           (Text)
 
-#if __GLASGOW_HASKELL__ >= 708
+#if __GLASGOW_HASKELL__ < 710
 import Data.Typeable (Typeable)
 #endif
 
@@ -60,7 +83,7 @@ import qualified Data.HashMap.Strict as KM
 -- Documentation rely on @f@ 'Alternative' instance behaving like lists'.
 newtype CollapsedList f a = CollapsedList (f a)
   deriving (Eq, Ord, Show, Read, Functor, Foldable, Traversable
-#if __GLASGOW_HASKELL__ >= 708
+#if __GLASGOW_HASKELL__ < 710
            , Typeable
 #endif
            )

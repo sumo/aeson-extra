@@ -1,8 +1,5 @@
 {-# LANGUAGE CPP                 #-}
 {-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE DeriveDataTypeable  #-}
-{-# LANGUAGE DeriveFoldable      #-}
-{-# LANGUAGE DeriveFunctor       #-}
 {-# LANGUAGE DeriveTraversable   #-}
 {-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -21,19 +18,44 @@ module Data.Aeson.Extra.SingObject (
 
 import Prelude ()
 import Prelude.Compat
+    ( (++),
+      ($),
+      Eq,
+      Functor,
+      Ord,
+      Read,
+      Show(show),
+      MonadFail(fail),
+      Foldable,
+      Traversable,
+      Semigroup((<>)),
+      Maybe(Just, Nothing),
+      (<$>) )
 
 import Control.DeepSeq     (NFData (..))
 import Data.Aeson
+    ( pairs,
+      parseJSON1,
+      withObject,
+      (<?>),
+      object,
+      toEncoding1,
+      toJSON1,
+      FromJSON(parseJSON),
+      FromJSON1(liftParseJSON),
+      KeyValue((.=)),
+      ToJSON(toJSON, toEncoding),
+      ToJSON1(liftToJSON, liftToEncoding) )
 import Data.Aeson.Encoding (pair)
 import Data.Proxy          (Proxy (..))
 import Data.String         (fromString)
-import Data.Typeable       (Typeable)
+#if __GLASGOW_HASKELL__ < 710
+import Data.Typeable (Typeable)
+#endif
 import GHC.TypeLits        (KnownSymbol, Symbol, symbolVal)
 
-import qualified Data.Text as T
 
 #if MIN_VERSION_aeson(2,0,0)
-import qualified Data.Aeson.Key    as Key
 import qualified Data.Aeson.KeyMap as KM
 #else
 import qualified Data.HashMap.Strict as KM
@@ -56,7 +78,11 @@ import Data.Aeson.Internal (JSONPathElement (Key))
 --
 -- /Available with: base >=4.7/
 newtype SingObject (s :: Symbol) a = SingObject a
-  deriving (Eq, Ord, Show, Read, Functor, Foldable, Traversable, Typeable)
+  deriving (Eq, Ord, Show, Read, Functor, Foldable, Traversable 
+#if __GLASGOW_HASKELL__ < 710
+    , Typeable
+#endif
+    )
 
 mkSingObject :: Proxy s -> a -> SingObject s a
 mkSingObject _ = SingObject
