@@ -43,7 +43,7 @@ library
   hs-source-dirs:   src
   ghc-options:      -Wall
   build-depends:
-      aeson                  >=1.5.4.1  && <1.6  || >=2.0 && <2.3
+      aeson                  >=1.5.4.1  && <1.6  || >=2.0 && <2.4
     , attoparsec             >=0.11.3.4 && <0.15
     , attoparsec-aeson       >=2.1.0.0  && <2.3
     , base                   >=4.7      && <4.22
